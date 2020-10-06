@@ -28,8 +28,8 @@ qnorm(0.005, mean = 500, sd = 3)
 # 4) The drug administration requests that in less than 10% cases the filling quantity deviates by more
 # than 0.5% from the nominal value. Does the filling process described here meet this requirement?
 
-1 - pnorm(500*1.005, mean=500, sd=3)
-  # 20% higher than 10% limit
+1 - pnorm(500*1.005, mean=500, sd=3) + pnorm(500*0.995, mean=500, sd=3)
+  # 40% higher than 10% limit
 
 
 # 5) If the process does not meet the requirement, for which precision ($sigma$) of the process could the
@@ -41,9 +41,9 @@ x <- seq(450, 550, by=0.1)
 
 plot(sigma_seq, 1 - pnorm(500*1.005, mean=500, sd=sigma_seq), 
      type="l", col="black", lwd=2, xlab="sigma", ylab="P(X>502.5)")
-abline(h=0.1, col="red", lty=2, lwd=1.5)
+abline(h=0.05, col="red", lty=2, lwd=1.5)
 locator()
-# around 1.95
+# around 1.51
 
 
 
@@ -54,21 +54,21 @@ solving_sigma <- function(possible_sigmas){
   # Finding the P(X > 502.5) for different sigmas
   prob.dist <- (1 - pnorm(502.5, mean=500, sd=possible_sigmas))
   
-  # We want to find the sigma where previuos probability is closer to 10%
-  objective <- abs(prob.dist - 0.1)
+  # We want to find the sigma where previuos probability is closer to 5%
+  objective <- abs(prob.dist - 0.05)
   
   return(objective) }
 
 # We optimize, finding minimum, for every possible value of sigma in (0,5) interval
 ex9_optim <- optimize(solving_sigma, interval=c(0,5), maximum = FALSE)
 
-# As in the graphic solution, the sigma that makes P(X > 502.5) < 10% is around 1.95
-# more precisely: 1.95074
+# As in the graphic solution, the sigma that makes P(X > 502.5) < 5% is around 1.51
+# more precisely: 1.519893
 ex9_optim
 
 
 # Checking:
-1 - pnorm(500*1.005, mean=500, sd=1.95074)
-# just below 10% :D
+1 - pnorm(500*1.005, mean=500, sd=1.51)
+# just below 5% :D
 
 
